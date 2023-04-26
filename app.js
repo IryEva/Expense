@@ -12,20 +12,21 @@ var cors = require('cors');
 
 const app = express();
 
-app.use(cors());
-
-app.set('view engine', 'ejs');
-app.set('views', 'views');
-
-const userRoutes = require('./routes/user');    
-
+app.use(cors());   
+ 
+const userRoutes = require('./routes/user');  
+const expenseRoutes = require('./routes/expense');                          
+const Expense = require('./models/expense');
+const User = require('./models/user');
 
 app.use(bodyParser.json({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));  
 
 app.use('/user', userRoutes);
+app.use('/expense',expenseRoutes);
 
-
+User.hasMany(Expense);
+Expense.belongsTo(User);
 
 //app.use(errorController.get404);
 
@@ -36,6 +37,6 @@ sequelize
     app.listen(4000);
 })
 .catch(err => {
-    console.log(err);
+    console.log(err); 
 });
 

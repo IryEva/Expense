@@ -11,9 +11,11 @@ async function login() {
 
         }
         console.log(loginDetails)
-        const response = await axios.post("http://localhost:3000/user/login",loginDetails)
+        const response = await axios.post("http://localhost:4000/user/login",loginDetails)
           if(response.status === 200) {
             alert(response.data.message)
+            localStorage.setItem('token',response.data.token)
+            window.location.href = "../ExpTracker/expense.html"
 
           } else {
             throw new Error(response.data.message)

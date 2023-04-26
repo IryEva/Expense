@@ -8,7 +8,7 @@ exports.addExpense = async (req, res, next)=> {
    const description = req.body.description;
    const category = req.body.category;
 
-   const data = await Expense.create( {amount: amount, description: description, category: category} )
+   const data = await Expense.create( {amount: amount, description: description, category: category,userId: req.user.id} )
    res.status(201).json({newExpense: data});
    } catch(err){
       res.status(500).json({
@@ -18,16 +18,17 @@ exports.addExpense = async (req, res, next)=> {
    } 
 
 }
-
+//{ where: {userId: req.user.id}}
 exports.getExpense = async (req, res, next) => {
     try{
-     const expenses = await Expense.findAll();
+      const expenses = await Expense.findAll({where:{userId:req.user.id}});
      console.log(expenses);
-     res.status(200).json({allExpenses: expenses})
-    } catch(error){
-     console.log('Get expense is failing', JSON.stringify(error));
-     res.status(500).json({error: err})
+     return res.status(200).json({expenses,success:true})
+    } catch(err){
+     console.log('Get expense is failing', JSON.stringify(err));
+     return res.status(500).json({error: err, success: false})
     }
+   
 }
 
 exports.deleteExpense = async (req, res) => {
