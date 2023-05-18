@@ -30,8 +30,8 @@ const jwt = require('jsonwebtoken');
      }
  }
 
- function generationAccessToken(id,name){
-    return jwt.sign({ userId : id , name:name }, 'niveditha')
+ function generateAccessToken(id,name,ispremiumuser){
+    return jwt.sign({ userId : id , name:name,ispremiumuser }, 'niveditha')
  }
 
 
@@ -49,7 +49,7 @@ exports.login = async (req,res) => {
                     throw new Error('something went wrong')
                 }
                 if(result === true){
-                    return res.status(200).json({ success: true, message: "User Logged in Successfully",token: generationAccessToken(user[0].id,user[0].name), user: user})
+                    return res.status(200).json({ success: true, message: "User Logged in Successfully",token: generateAccessToken(user[0].id,user[0].name, user[0].ispremiumuser), user: user})
                 } else {
                     return res.status(400).json({ success:false, message: "Password is incorrect"})
                 }

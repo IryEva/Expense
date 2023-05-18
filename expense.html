@@ -39,7 +39,7 @@
 
 <script>
     function saveExpense(event){
-    event.preventDefault();
+    //event.preventDefault();
     const amount = event.target.amount.value;
     const description= event.target.description.value;
     const category = event.target.category.value;
@@ -160,7 +160,7 @@ function removeExpenseFromScreen(expenseid) {
          leaderboardElem.innerHTML += '<h2> Leader Board </h2>'
          
          userLeaderBoardArray.data.forEach((userDetails) => {
-             leaderboardElem.innerHTML += `<li>Name - ${userDetails.name} -Total Expenses -${userDetails.total_cost} </li>`
+             leaderboardElem.innerHTML += `<li>Name - ${userDetails.name} -Total Expenses -${userDetails.totalExpenses || 0} </li>`   
          })
      }
      document.getElementById("message").appendChild(inputElement);
@@ -172,8 +172,7 @@ function removeExpenseFromScreen(expenseid) {
  }
 
 document.getElementById('buy premium').onclick = async function (e) {
-    try{
-        const token = localStorage.getItem('token')
+     const token = localStorage.getItem('token')
     const response = await axios.get('http://localhost:4000/purchase/premiummembership',{ headers: {"Authorization": token}});
     console.log(response);
     var options = 
@@ -181,7 +180,7 @@ document.getElementById('buy premium').onclick = async function (e) {
         "key" : response.data.key_id,
         "order_id" : response.data.order.id,
          "handler": async function (response) {
-             await axios.post('http://localhost:4000/purchase/updatetransactionstatus',{
+            const res= await axios.post('http://localhost:4000/purchase/updatetransactionstatus',{
                  order_id: options.order_id,
                  payment_id: response.razorpay_payment_id,
 
@@ -203,9 +202,6 @@ document.getElementById('buy premium').onclick = async function (e) {
          console.log(response);
          alert('Something went wrong')
      });
-    }catch(err){
-        console.log(err);
-    } 
 }
 
 
