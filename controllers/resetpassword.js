@@ -21,7 +21,7 @@ const forgotpassword = async (req, res) => {
         const user = await User.findOne({where : { email }});
         if(user){  
             const id = uuid.v4();
-            user.createForgotpassword({ id , active: true })
+            user.createForgotpassword({ id , isActive: true })
 
             if (!validator.isEmail(email.toLowerCase())) {
                     return res.status(400).json({ error: 'Invalid email address' });
@@ -62,7 +62,7 @@ const resetpassword = (req, res) => {
     const id =  req.params.id;
     Forgotpassword.findOne({ where : { id }}).then(forgotpasswordrequest => {
         if(forgotpasswordrequest){
-            forgotpasswordrequest.update({ active: false});
+            forgotpasswordrequest.update({ isActive: false});
             res.status(200).send(`<html>
                                     <script>
                                         function formsubmitted(e){

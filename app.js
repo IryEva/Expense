@@ -20,6 +20,9 @@ const Expense = require('./models/expense');
 const User = require('./models/user');
 const purchaseRoutes = require('./routes/purchase');
 const Order = require('./models/orders');
+const premiumFeatureRoutes = require('./routes/premiumFeature');
+const resetPasswordRoutes = require('./routes/resetpassword');
+const forgotpassword = require('./models/forgotpassword');
 
 app.use(bodyParser.json({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));  
@@ -27,12 +30,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/user', userRoutes);
 app.use('/expense',expenseRoutes);
 app.use('/purchase',purchaseRoutes);
+app.use('/premium',premiumFeatureRoutes);
+app.use('/password', resetPasswordRoutes);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
 
 User.hasMany(Order);
 Order.belongsTo(User);
+
+User.hasMany(forgotpassword);
+forgotpassword.belongsTo(User);
+
 
 //app.use(errorController.get404);
 
