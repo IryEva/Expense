@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>forgot password</title>
+    <style>
+        input[type="email"], input[type="password"] {
+            border: 1px solid #ccc;
+            background-color: hsl(0, 0%, 100%);
+            padding: 8px;
+            margin-bottom: 10px;
+            margin : auto;
+        }
+        form {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            
+         
+        }
+    </style>
+</head>
+<body>
+    <form id="login-form" onsubmit="forgotpassword(event)">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="login">Send Email:</button>
+        <p class="text-center"><a href="../ExpTracker/signup.html" id="signup-link">New user- signup </a></p>
+    </form>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.5/axios.min.js"></script>
+<script src="forgotpassword.js"></script>
+</html>
