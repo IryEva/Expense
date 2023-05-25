@@ -163,3 +163,24 @@ document.getElementById('buy premium').onclick = async function (e) {
          alert('Something went wrong')
      });
 }
+
+function download(){
+    const token = localStorage.getItem('token');
+    axios.get('http://localhost:4000/user/download', { headers: {"Authorization" : token} })
+    .then((response) => {
+        if(response.status === 201){
+            //the backend is essentially sending a download link
+            //  which if we open in browser, the file would download
+            var a = document.createElement("a");
+            a.href = response.data.fileUrl;
+            a.download = 'myexpense.csv';
+            a.click();
+        } else {
+            throw new Error(response.data.message)
+        }
+
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+}
