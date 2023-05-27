@@ -164,23 +164,50 @@ document.getElementById('buy premium').onclick = async function (e) {
      });
 }
 
-function download(){
+async function download(){
+    try{
     const token = localStorage.getItem('token');
-    axios.get('http://localhost:4000/user/download', { headers: {"Authorization" : token} })
-    .then((response) => {
-        if(response.status === 201){
-            //the backend is essentially sending a download link
-            //  which if we open in browser, the file would download
-            var a = document.createElement("a");
-            a.href = response.data.fileUrl;
-            a.download = 'myexpense.csv';
-            a.click();
-        } else {
-            throw new Error(response.data.message)
-        }
-
-    })
-    .catch((err) => {
+    const response = await axios.get('http://localhost:4000/expense/download', { headers: {"Authorization" : token} })
+    if(response.status === 200){
+        // document.getElementById('fileDownloadedbutton').hidden = false;
+        var a = document.createElement("a");
+        a.href = response.data.fileURL;
+        a.download = 'myexpense.csv';
+        a.click();
+    } else {
+        throw new Error(response.data.message)
+    }
+    }catch(err) {
         console.log(err);
-    });
+    }
+}
+
+async function showDownloadedFiles() {
+    try{
+    const downloadedFiles = document.getElementById('downloadedFiles');
+    
+    const token = localStorage.getItem('token');
+    const response = await axios.get('http://localhost:4000/expense/downloadedFiles', { headers: {"Authorization" : token} })
+    const data = response.data;
+    console.log('all downloads',data);
+    if(data.length >0){ 
+    downloadedFiles.hidden = false;
+    const urls = document.getElementById('fileList');
+    urls.textContent = 'Downloaded Files';
+    urls.style.fontWeight= "500";
+      
+    for(let i=0; i<data.length; i++){
+        const link = document.createElement('a');
+        link.href = data[i]
+        link.textContent = data[i].slice(0, 50 - 3) + "...";
+        const urlList = document.createElement('li');
+        urlList.appendChild(link);
+        urls.appendChild(urlList);
+        }
+    }else{
+      alert(`You haven't downloaded any file yet`);
+    }
+    }catch(err) {
+        console.log(err);
+    }
 }
