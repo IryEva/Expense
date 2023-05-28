@@ -51,7 +51,7 @@ exports.addExpense = async (req, res, next)=> {
         where: {id: req.user.id} , transaction: t
     })
         await t.commit();
-        res.status(200).json({newExpense: expense})
+        res.status(200).json({ expense: expense})
     
   } catch(err) {
     await t.rollback();
@@ -61,16 +61,33 @@ exports.addExpense = async (req, res, next)=> {
 }
 
 //{ where: {userId: req.user.id}}
-exports.getExpense = async (req, res, next) => {
-    try{
-      const expenses = await Expense.findAll({where:{userId:req.user.id}});
-     console.log(expenses);
-     return res.status(200).json({expenses,success:true})
-    } catch(err){
-     console.log('Get expense is failing', JSON.stringify(err));
-     return res.status(500).json({error: err, success: false})
-    }
-   
+exports.getExpense = async(req, res) => {
+  const t = await sequelize.transaction();
+  try {
+      const page = parseInt(req.query.page)
+      const limit = parseInt(req.query.limit)
+      const expenses = await Expense.findAll({ where: {userId: req.user.id} },{transaction:t})
+      const user = await User.findOne({ where: {id: req.user.id} },{transaction:t});
+
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+      const nextPage = endIndex < expenses.length ? page + 1 : null;
+      const prevPage = startIndex > 0 ? page - 1 : null;
+      await t.commit();
+      res.status(200).json({
+          allExpensesDetails: expenses,
+          currentPage: page,
+          nextPage: nextPage,
+          prevPage: prevPage,
+          limit,
+          allExpensesDetails: expenses.slice(startIndex, endIndex),
+          balance: user.balance
+      });
+  } catch(error) {
+      await t.rollback();
+      console.log('Get expenses is failing', JSON.stringify(error))
+      res.status(500).json({error: error})
+  }
 }
 
 exports.deleteExpense = async (req, res) => {

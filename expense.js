@@ -16,7 +16,7 @@ function saveExpense(event){
     axios.post("http://localhost:4000/expense/add-expense",obj, {headers: 
     {"Authorization": token}})
        .then((response) => {
-        showNewExpenseOnScreen(response.data.newExpense);
+        showNewExpenseOnScreen(response.data.expense);
            console.log(response);
        })
        .catch((error) => {
@@ -43,30 +43,88 @@ function parseJwt (token) {
     return JSON.parse(jsonPayload);
 }
 
-window.addEventListener("DOMContentLoaded",() => {
+window.addEventListener('DOMContentLoaded', async () => {
+    // let page = 1, limit = 5;
     const token = localStorage.getItem('token');
-    const decodeToken = parseJwt(token)
+    const decodeToken = parseJwt(token); 
     console.log(decodeToken);
     const ispremiumuser = decodeToken.ispremiumuser
-    if(ispremiumuser){
-        showPremiumuserMessage()
-        showLeaderboard()  
+    if(ispremiumuser) {
+        showPremiumuserMessage();
+        showLeaderboard();
     }
-    axios.get("http://localhost:4000/expense/get-expenses",{ headers: {"Authorization": token}})
-       .then((response) => {
-          console.log(response);
-        //    response.data.expenses.forEach(expense => {
-        //      showNewExpenseOnScreen(expense);
-        //    })
-        for (var i = 0; i < response.data.expenses.length; i++) {
-          showNewExpenseOnScreen(response.data.expenses[i]);
-        }
+    getAllExpenses();
+    setPaginationLimit();
+})
 
-          
-       }).catch((error) => {
-            console.log(error);
-       });
-});
+async function getAllExpenses(page = 1, limit = 5) {
+    const token = localStorage.getItem('token');
+    if(localStorage.getItem('limit')){
+        limit = localStorage.getItem('limit');
+    }
+    const res = await axios.get(`http://localhost:4000/expense/get-expenses?page=${page}&limit=${limit}`, {headers: {'Authorization': token}})
+        const expenses = res.data.allExpensesDetails;
+        expenses.forEach((expense) => {
+            showNewExpenseOnScreen(expense)
+        })
+        balance = res.data.balance;
+        if(expenses.length <= 0){
+            const paginationRowDiv = document.getElementById('paginationRowDiv');
+            paginationRowDiv.innerText = '';
+            return;
+        }
+        const currentPage = res.data.currentPage;
+        const prevPage = res.data.prevPage;
+        const nextPage = res.data.nextPage;
+        paginationInDOM(currentPage, prevPage, nextPage, limit);
+}
+
+function paginationInDOM(currentPage, prevPage, nextPage, limit = 5){
+    currentPage = parseInt(currentPage);
+    prevPage = parseInt(prevPage);
+    nextPage = parseInt(nextPage);
+    
+    paginationButtons.innerText = '';
+    
+    const currentPageBtn = document.createElement('button');
+    currentPageBtn.innerText = currentPage;
+    currentPageBtn.className = 'btn btn-secondary';
+    currentPageBtn.addEventListener('click', () => getAllExpenses(currentPage, limit));
+
+    const prevPageBtn = document.createElement('button');
+    prevPageBtn.innerText = '<< Prev';
+    prevPageBtn.className = 'btn btn-outline-secondary';
+    prevPageBtn.addEventListener('click', () => getAllExpenses(prevPage, limit));
+
+    const nextPageBtn = document.createElement('button');
+    nextPageBtn.innerText = 'Next >>';
+    nextPageBtn.className = 'btn btn-outline-secondary';
+    nextPageBtn.addEventListener('click', () => getAllExpenses(nextPage, limit));
+
+    if(prevPage){
+        prevPageBtn.classList.remove('disabled');
+    }else{
+        prevPageBtn.classList.add('disabled');
+    }
+    if(nextPage){
+        nextPageBtn.classList.remove('disabled');
+    }else{
+        nextPageBtn.classList.add('disabled');
+    }
+
+    paginationButtons.appendChild(prevPageBtn);
+    paginationButtons.appendChild(currentPageBtn);
+    paginationButtons.appendChild(nextPageBtn);
+}
+
+function setPaginationLimit(){
+    const paginationLimit = document.getElementById('paginationLimit');
+    paginationLimit.addEventListener('change', () => {
+        localStorage.setItem('limit', paginationLimit.value);
+        window.location.reload();
+    });
+}
+
 
 function showNewExpenseOnScreen(expense) {
     const parentNode = document.getElementById("items");
@@ -211,3 +269,30 @@ async function showDownloadedFiles() {
         console.log(err);
     }
 }
+
+
+
+// async function listExpenses(page=1, limit=5) {
+//     const token = localStorage.getItem('token');
+//     if(localStorage.getItem('limit')){
+//         limit = localStorage.getItem('limit');
+//     }
+//     const res = axios.get("http://localhost:4000/expense/get-expenses?page=${page}&limit=${limit}",
+//                     {headers: {'Authorization':token}})
+//     const expenses = res.data.allExpensesDetails;
+//     expenses.forEach((expense) => {
+//         showNewExpenseOnScreen(expense)
+//     })
+//     balance = res.data.balance;
+//     if(expenses.length <= 0){
+//         const pagination = document.getElementById('pagination');
+//         pagination.innerText= '';
+//         return;
+//     }
+//     const currentPage = res.data.currentPage;
+//     const prevPage = res.data.prevPage;
+//     const nextPage = res.data.nextPage;
+//     paginationScreen(currentPage,prevPage,nextPage,limit);
+
+// }
+
