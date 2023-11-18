@@ -128,9 +128,10 @@ function setPaginationLimit(){
 
 function showNewExpenseOnScreen(expense) {
     const parentNode = document.getElementById("items");
-    const childHTML = `   <div <li id=${expense.id}>${expense.amount}-${expense.category}-${expense.description}
-       <button class="btn btn-primary" onclick=deleteExpense('${expense.id}') > Delete Expense</button>
-       <button class="btn btn-primary" onclick=editExpense('${expense.amount}','${expense.description}','${expense.category}','${expense.id}')> Edit Expense</button>
+    console.log(expense._id);
+    const childHTML = `   <div <li id=${expense._id}>${expense.amount}-${expense.category}-${expense.description}
+       <button class="btn btn-primary" onclick=deleteExpense('${expense._id}') > Delete Expense</button>
+       <button class="btn btn-primary" onclick=editExpense('${expense.amount}','${expense.description}','${expense.category}','${expense._id}')> Edit Expense</button>
        </li>`;
     parentNode.innerHTML = parentNode.innerHTML + childHTML;
 }
@@ -146,6 +147,7 @@ function editExpense(amount, description, category, expenseid) {
 // delete Expense
 function deleteExpense(expenseid) {
     const token = localStorage.getItem('token');
+    console.log(expenseid);
     axios.delete(`http://localhost:4000/expense/delete-expense/${expenseid}`,{headers:{"Authorization":token}})
         .then((response) => {
            removeExpenseFromScreen(expenseid);
@@ -196,7 +198,7 @@ document.getElementById('buy premium').onclick = async function (e) {
     var options = 
     {
         "key" : response.data.key_id,
-        "order_id" : response.data.order.id,
+        "order_id" : response.data.orderid,
          "handler": async function (response) {
             const res= await axios.post('http://localhost:4000/purchase/updatetransactionstatus',{
                  order_id: options.order_id,

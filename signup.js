@@ -1,27 +1,40 @@
-async function signup(e) {
-    try{
-        e.preventDefault();
-        console.log(e.target.email.value);
+let submitbtn = document.getElementById('submit');
 
-        const signupDetails ={
-            name: e.target.name.value,
-            email: e.target.email.value,
-            password: e.target.password
+submitbtn.addEventListener('click', signup);
 
-        }
-        console.log(signupDetails)
-        const reponse = await axios.post("http://localhost:3000/user/signup",signupDetails)
-          if(Response.status === 201) {
-            window.location.href = "../Login/login.html"
+async function signup() {
+   event.preventDefault();
+   try{
+    //const email= document.getElementById("email").value;
+    // console.log(email);
+    // console.log(event.target.email.value);
+    //  const signupDetails ={
+    //    name: event.target.name.value,
+    //    email: event.target.email.value,
+    //    password: event.target.password.value 
 
-          } else {
-            throw new Error('Failed to login')
-
-          }
-
+    //  }   
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const signupDetails = {
+      name,
+      email,
+      password
     }
-    catch(err){
-        document.body.innerHTML += `<div style="color:red;">${err} <div> `
+     console.log(signupDetails)
+     const response = await axios.post("http://localhost:4000/user/signup",signupDetails)
+     if(response.status === 201) {
+       window.location.href = "../login.html";
 
-    }
-}
+     } else {
+       throw new Error('Failed to login')
+
+     }  
+
+   }
+   catch(err){
+     document.body.innerHTML += `<div style="color:red;">${err} <div> `;
+
+   }
+ }

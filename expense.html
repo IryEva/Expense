@@ -6,10 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <title>Expense Tracker</title>
+    <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <h3>Expense Tracking</h3>
-    <div class="container">
+    
+    <div class="container expenseform" >
+        <div class="expenseform-left">
+            <div ><a href="../ExpTracker/login.html">Log Out</a></div>
+            <h3>Expense Tracking</h3>
         <form onsubmit="saveExpense(event)">
             <label for="amount" class="form-label" >Choose expense amount:</label>
             <input type="text" id="amount" class="form-control" >
@@ -23,14 +27,35 @@
                 <option>Movies</option>
                 <option>Groceries</option>
             </select>
-            <input type="submit" class="btn btn-dark" id = 'submit'>
+            <input type="submit" value="Add-expense" class="btn btn-dark" id = 'submit'>
             <br>
             
         </form>
+
+        </div>
+        <div class="expenseform-right">
+            <div class="col 5 md-3" style="text-align: end;">
+                <div class="row mb-1" id="paginationRowDiv" style="text-align: end;"></div>
+                  <div class="col-8" style="text-align: end;"></div>
+                  <div class="col-4" style="text-align: end; width: 33%;">
+                    <select class="form-select form-select-sm" id="paginationLimit">
+                      <option selected>Rows per Page</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="15">15</option>
+                      <option value="20">20</option>
+                    </select>
+                  </div>
+                  
+            </div>
+        
         <h2>Expenses</h2>
+        <div class="btn-group btn-group-sm" role="group" id="paginationButtons"></div>
+        <ul id="items" class="list-group" >
+        </ul> 
+        </div>
     </div>
-    <ul id="items" class="list-group" >
-    </ul> 
+    
     <div id="message"></div>
     <button type="submit" class="btn btn-dark" id="buy premium">Buy Premium</button> 
     <li id="leaderboard"></li>
@@ -38,20 +63,7 @@
 
     <button onclick="showDownloadedFiles()" class="btn btn-dark" id="downloadedFiles">List of Files downloaded</button>
     <li id="fileList"></li>
-    <div class="col 5 md-3" style="text-align: end;">
-        <div class="row mb-1" id="paginationRowDiv" style="text-align: end;"></div>
-          <div class="col-8" style="text-align: end;"></div>
-          <div class="col-4" style="text-align: end; width: 33%;">
-            <select class="form-select form-select-sm" id="paginationLimit">
-              <option selected>Rows per Page</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-            </select>
-          </div>
-    </div>
-    <div class="btn-group btn-group-sm" role="group" id="paginationButtons"></div>
+   
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.2/axios.min.js"></script>
 

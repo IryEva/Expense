@@ -20,7 +20,13 @@ const jwt = require('jsonwebtoken');
          }
          const saltrounds = 10;
          bcrypt.hash(password, saltrounds, async (err,hash) => {
-            await User.create( { name,email,password: hash})
+            const newUser = new User({
+                name,
+                email,
+                password: hash
+            });
+            await newUser.save();
+            //await User.create( { name,email,password: hash})
             res.status(201).json({message: 'Succesfully done'})
          })
         
@@ -42,14 +48,18 @@ exports.login = async (req,res) => {
         if( isstringinvalid(email) || isstringinvalid(password)){
             return res.status(400).json({err: "Bad params . something is missing"})
         }
-        const user = await User.findAll({where : { email }})
-        if(user.length > 0) {
-            bcrypt.compare(password,user[0].password, (err,result) => {
+        const user = await User.findOne({ email })
+        if(user) {
+            bcrypt.compare(password,user.password, (err,result) => {
                 if(err){
                     throw new Error('something went wrong')
                 }
                 if(result === true){
-                    return res.status(200).json({ success: true, message: "User Logged in Successfully",token: generateAccessToken(user[0].id,user[0].name, user[0].ispremiumuser), user: user})
+                    return res.status(200).json({ success: true, message: "User Logged in Successfully",
+                    token: generateAccessToken(user.id,user.name, user.ispremiumuser)})
+                    // const token = generateAccessToken(user._id, user.name, user.ispremiumuser);
+                    // console.log('User login Successfull')
+                    // res.status(200).json({ success: true, message: 'User logged in successfully', token });
                 } else {
                     return res.status(400).json({ success:false, message: "Password is incorrect"})
                 }

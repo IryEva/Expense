@@ -1,23 +1,32 @@
-const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
-const authenticate = (req,res,next) => {
+const authenticate = async (req, res, next) => {
     try {
         const token = req.header('Authorization');
-        console.log(token);
-        const user = jwt.verify(token,'niveditha');
-        console.log("user ID>>" ,user.userId);
-        User.findByPk(user.userId).then(user => {
-            req.user = user;
-            next();
-        })
-
-    } catch(err) {
+        
+        if (!token) {
+            return res.status(401).json({ success: false, message: 'Authorization token missing' });
+        }
+        
+        const decodedToken = jwt.verify(token, 'niveditha');
+        const userId = decodedToken.userId;
+        
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'User not found' });
+        }
+        
+        req.user = user;
+        next();
+    } catch (err) {
         console.log(err);
-        return res.status(401).json({success: false})
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
-}
+};
 
 module.exports = {
-    authenticate 
-}
+    authenticate
+};
+
